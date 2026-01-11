@@ -73,3 +73,14 @@ def update_task(task_id: int, updated_task: Task, session=Depends(get_session)):
     session.commit()
     session.refresh(task)
     return task 
+
+@app.patch("/tasks/{task_id}/complete", response_model=Task)
+def mark_task_complete(task_id: int, session=Depends(get_session)):
+    task = session.get(Task, task_id)
+    if not task:
+        return HTTPException(status_code=404, detail="Task not found")
+    task.completed = True
+    session.add(task)
+    session.commit()
+    session.refresh(task)
+    return task 
